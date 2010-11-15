@@ -1,9 +1,11 @@
 <% include '/WEB-INF/includes/header.gtpl' %>
 
-<h2>Bridge console</h2>
+<h2>Query</h2>
 
 <br/>
-${request.manager}
+${request.requestIndex}
 
 <% include '/WEB-INF/includes/footer.gtpl' %>
+
+
 

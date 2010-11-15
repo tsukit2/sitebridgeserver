@@ -5,8 +5,8 @@ get "/something", redirect: "/blog/2008/10/20/something", cache: 2.hours
 get "/book/isbn/@isbn", forward: "/WEB-INF/groovy/book.groovy?isbn=@isbn", validate: { isbn ==~ /\d{9}(\d|X)/ }
 */
 
-all '/bridgeconsole',         forward:'/bridgeconsole.groovy'
-all '/bridgeconsole/**',      forward:'/bridgeconsole.groovy'
+all '/bridgeconsole',         forward:'/bridgeconsole.groovy?action=index'
+all '/bridgeconsole/@action', forward:'/bridgeconsole.groovy?action=@action'
 all '/bridgequery',           forward:'/bridgequery.groovy'
 all '/bridgeanswer',          forward:'/bridgeanswer.groovy'
 all '/**',                    forward:'/sitebridge.groovy'

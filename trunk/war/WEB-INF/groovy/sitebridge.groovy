@@ -7,8 +7,8 @@ def myrequest = [
 
 // then ask request manager to process request
 // this call will block. 
-def response = RequestManager.instance.processRequest(myrequest)
-
+def manager = new RequestManager(memcache)
+def response = manager.processRequest(myrequest)
 
 request.response = response
-forward 'sitebridge.gtpl'
+forward '/view/sitebridge/index.gtpl'

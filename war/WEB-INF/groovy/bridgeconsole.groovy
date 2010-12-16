@@ -1,3 +1,5 @@
+import net.sf.json.*
+import net.sf.json.groovy.*;
 
 index = {
    println "this is index"
@@ -10,7 +12,8 @@ reset = {
    memcache['lastRequestIndex'] = 0
    memcache['lastServeIndex'] = 0
 
-   println "reset successfully"
+   headers.contentType = 'text/json'
+   println JSONObject.fromObject([status:true]).toString()
 }
 
 status = {
@@ -19,20 +22,24 @@ status = {
 
 query = {
    def manager = new RequestManager(memcache)
-   def requestIndex = manager.getNextPendingRequestHandle()
-   log.info("query index: ${requestIndex}")
+   def pendingRequest = manager.getNextPendingRequest()
+   log.info("query index: ${pendingRequest?.requestIndex}")
 
-   request.requestIndex = requestIndex
-   forward '/view/bridgeconsole/query.gtpl'
+   headers.contentType = 'text/json'
+   println JSONObject.fromObject([request:pendingRequest]).toString()
 }
 
 satisfy = {
-   log.info("params.responseText = ${params.responseText}")
+   def body = request.reader.text
+   log.info("satisfying ${body}")
+   def response = JSONObject.fromObject(body)
+   log.info("satisfying request = ${response.responseIndex}")
    def manager = new RequestManager(memcache)
-   manager.satisfyRequestForKey(params.index, params.responseText)
+   manager.satisfyRequest(response)
 
-   forward '/view/bridgeconsole/satisfy.gtpl'
+   headers.contentType = 'text/json'
+   println JSONObject.fromObject([satisfied:true]).toString()
 }
 
 "${params.action}"()
-//forward 'bridgeconsole.gtpl'
+

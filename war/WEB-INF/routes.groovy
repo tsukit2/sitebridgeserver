@@ -7,9 +7,13 @@ get "/book/isbn/@isbn", forward: "/WEB-INF/groovy/book.groovy?isbn=@isbn", valid
 
 all '/bridgeconsole',         forward:'/bridgeconsole.groovy?action=index'
 all '/bridgeconsole/@action', forward:'/bridgeconsole.groovy?action=@action'
-all '/bridgequery',           forward:'/bridgequery.groovy'
-all '/bridgeanswer',          forward:'/bridgeanswer.groovy'
-all '/**',                    forward:'/sitebridge.groovy'
+all '/**',                    forward:'/sitebridge.groovy/aaa/bbb'
+//all '/@pa/@pb/@pc/@pd/@pe',   forward:'/sitebridge.groovy/@pa/@pb/@pc/@pd/@pe'
+//all '/@pa/@pb/@pc/@pd',       forward:'/sitebridge.groovy/@pa/@pb/@pc/@pd'
+//all '/@pa/@pb/@pc',           forward:'/sitebridge.groovy/@pa/@pb/@pc'
+//all '/@pa/@pb',               forward:'/sitebridge.groovy/@pa/@pb'
+//all '/@pa',                   forward:'/sitebridge.groovy/@pa'
+//all '/',                      forward:'/sitebridge.groovy'
 
 // routes for the blobstore service example
 /*

@@ -15,7 +15,7 @@ public class RequestManager {
       // queue it up first
       long index = memcache.increment('lastRequestIndex', 1)
       log.info("index = $index")
-      memcache['request' + index] = request
+      memcache['request' + index] = [requestIndex:index, requestDetails:request]
 
       // now lock on it and wait for it until someone satisfy it
       log.info("request queue...waiting")
@@ -37,23 +37,38 @@ public class RequestManager {
       return response
    }
 
-   public getNextPendingRequestHandle() {
-      log.info("about to get next request")
+   public getNextPendingRequest() {
       def lastRequestIndex = memcache['lastRequestIndex']
       def lastServeIndex = memcache['lastServeIndex']
-      if (lastRequestIndex > lastServeIndex) {
-         log.info("get into the queue now")
-         return memcache.increment('lastServeIndex', 1)
+      log.info("lastRequestIndex = ${lastRequestIndex}, lastServeIndex = ${lastServeIndex}")
+
+
+      // has pending request if
+      if (lastRequestIndex != null && lastServeIndex != null && lastRequestIndex > lastServeIndex) {
+         def index = memcache.increment('lastServeIndex', 1)
+         log.info("found request ${index}")
+         return memcache['request' + index]
       }
 
       // reach here, there is nothing
       return null
    }
 
-   public satisfyRequestForKey(index,response) {
-      log.info("request = " + memcache['request' + index])
-      memcache['response' + index] = response
+   public satisfyRequest(response) {
+      log.info("response ${response.responseIndex}")
+      memcache['response' + response.responseIndex] = convertToMapAndArray(response)
    }
 
+   // utility method to convert json object to map and array
+   private convertToMapAndArray(jsonObj) {
+      switch(jsonObj) {
+         case List: 
+            return jsonObj.inject([]) { l, elem -> l << convertToMapAndArray(elem); l }
+         case Map:  
+            return jsonObj.inject([:]) { m, entry -> m[entry.key] = convertToMapAndArray(entry.value); m }
+         default:   
+            return jsonObj
+      }
+   }
 }
 

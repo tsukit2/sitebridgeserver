@@ -1,8 +1,12 @@
 // create request object
 def myrequest = [
    method:request.method,
+   path:request.pathInfo,
+   contextPath:request.contextPath,
+   queryStr:request.queryString,
    headers:new HashMap(headers),
-   params:new HashMap(params)
+   params:new HashMap(params),
+   bodyBytes:request.inputStream.bytes
    ]
 
 // then ask request manager to process request

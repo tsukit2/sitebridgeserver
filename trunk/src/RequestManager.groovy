@@ -1,6 +1,7 @@
 import java.util.concurrent.CountDownLatch
 import groovyx.gaelyk.logging.GroovyLogger
 import com.google.appengine.api.memcache.MemcacheService
+import net.sf.json.*
 
 public class RequestManager {
    private static log = new GroovyLogger(RequestManager.class.name)
@@ -27,11 +28,11 @@ public class RequestManager {
 
    private waitFor(index) {
       def response = memcache['response' + index]
-      log.info("waiting: " + response)
+      log.info("waiting for: " + index)
       while (!response) {
-         Thread.currentThread().sleep(3000)
+         Thread.currentThread().sleep(1000)
          response = memcache['response' + index]
-         log.info("waiting: " + response)
+         log.info("waiting for: " + index)
       }
       memcache.deleteAll(['request' + index, 'response' + index])
       return response
@@ -66,6 +67,8 @@ public class RequestManager {
             return jsonObj.inject([]) { l, elem -> l << convertToMapAndArray(elem); l }
          case Map:  
             return jsonObj.inject([:]) { m, entry -> m[entry.key] = convertToMapAndArray(entry.value); m }
+         case JSONNull:
+            return null
          default:   
             return jsonObj
       }

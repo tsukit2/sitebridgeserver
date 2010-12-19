@@ -31,7 +31,7 @@ query = {
 
 satisfy = {
    def body = request.reader.text
-   log.info("satisfying ${body}")
+   //log.info("satisfying ${body}")
    def response = JSONObject.fromObject(body)
    log.info("satisfying request = ${response.responseIndex}")
    def manager = new RequestManager(memcache)

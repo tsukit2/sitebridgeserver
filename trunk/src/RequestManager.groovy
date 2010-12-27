@@ -34,6 +34,7 @@ public class RequestManager {
          response = memcache['response' + index]
          log.info("waiting for: " + index)
       }
+      resembleBodyBytesIfTooLarge(response)
       memcache.deleteAll(['request' + index, 'response' + index])
       return response
    }
@@ -57,7 +58,9 @@ public class RequestManager {
 
    public satisfyRequest(response) {
       log.info("response ${response.responseIndex}")
-      memcache['response' + response.responseIndex] = convertToMapAndArray(response)
+      response = convertToMapAndArray(response)
+      breakBodyBytesIfTooLarge(response)
+      memcache['response' + response.responseIndex] = response
    }
 
    // utility method to convert json object to map and array
@@ -71,6 +74,51 @@ public class RequestManager {
             return null
          default:   
             return jsonObj
+      }
+   }
+
+   private breakBodyBytesIfTooLarge(response) {
+      // break the body bytes if it's too larget
+      def bodyBytes = response.responseDetails.bodyBytes
+      def chuckSize = 7680
+      if (bodyBytes.size() > chuckSize) {
+         // break into chucks
+         def newBodyBytes = []
+         bodyBytes.eachWithIndex { v,i -> 
+            if (i % chuckSize == 0) {
+               newBodyBytes << [v] 
+            } else {
+               newBodyBytes.last() << v 
+            }
+         }
+         //println "**** ${newBodyBytes.size()}"
+
+         // then replace each chuck with name reference to memcache value
+         newBodyBytes.size().times { index ->
+            def name = "response${response.responseIndex}-bodyByte${index}".toString()
+            memcache[name] = newBodyBytes[index]
+            newBodyBytes[index] = name
+         }
+
+         // finally replace the body bytes with the new one
+         response.responseDetails.bodyBytes = newBodyBytes
+         //println(response.responseDetails.bodyBytes)
+      }
+   }
+
+   private resembleBodyBytesIfTooLarge(response) {
+      def bodyBytes = response.responseDetails.bodyBytes
+      if (bodyBytes.size() && bodyBytes.first() instanceof String) {
+         // resemble the bytes together again and remove cache
+         def newBodyBytes = []
+         bodyBytes.each { name -> 
+            newBodyBytes.addAll(memcache[name]) 
+            memcache.delete(name)
+         }
+
+         // finally replace the body bytes with the new one
+         response.responseDetails.bodyBytes = newBodyBytes
+         //println("**** ${response.responseDetails.bodyBytes.size()}")
       }
    }
 }

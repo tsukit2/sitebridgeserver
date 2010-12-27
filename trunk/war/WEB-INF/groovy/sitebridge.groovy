@@ -16,7 +16,9 @@ def myresponse = manager.processRequest(myrequest)
 // now relay the information to the original request
 response.status = myresponse.responseDetails.status
 myresponse.responseDetails.headers?.each  { k,v ->
-   response.setHeader(k,v)
+   if (k != 'Content-Encoding') {
+      response.setHeader(k,v)
+   }
 }
 //log.info(new String(myresponse.responseDetails.bodyBytes as byte[]))
 response.outputStream << (myresponse.responseDetails.bodyBytes as byte[])

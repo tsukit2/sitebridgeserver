@@ -22,11 +22,14 @@ status = {
 
 query = {
    def manager = new RequestManager(memcache)
-   def pendingRequest = manager.getNextPendingRequest()
-   log.info("query index: ${pendingRequest?.requestIndex}")
+   def requests = []
+   def pendingRequest = null
+   while (pendingRequest = manager.getNextPendingRequest()) {
+      requests << pendingRequest
+   }
 
    headers.contentType = 'text/json'
-   println JSONObject.fromObject([request:pendingRequest]).toString()
+   println JSONArray.fromObject(requests).toString()
 }
 
 satisfy = {

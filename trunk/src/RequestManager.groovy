@@ -2,6 +2,7 @@ import java.util.concurrent.CountDownLatch
 import groovyx.gaelyk.logging.GroovyLogger
 import com.google.appengine.api.memcache.MemcacheService
 import net.sf.json.*
+import java.util.zip.*
 
 public class RequestManager {
    private static log = new GroovyLogger(RequestManager.class.name)
@@ -119,6 +120,12 @@ public class RequestManager {
          // finally replace the body bytes with the new one
          response.responseDetails.bodyBytes = newBodyBytes
          //println("**** ${response.responseDetails.bodyBytes.size()}")
+      }
+
+      // decompress the body bytes no matter what
+      if (response.responseDetails.bodyBytes) {
+         response.responseDetails.bodyBytes = new GZIPInputStream(
+            new ByteArrayInputStream(response.responseDetails.bodyBytes as byte[])).bytes
       }
    }
 }

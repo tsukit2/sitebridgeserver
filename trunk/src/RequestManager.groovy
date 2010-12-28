@@ -80,7 +80,6 @@ public class RequestManager {
       }
    }
 
-   /*
    private breakBodyBytesIfTooLarge(response) {
       // break the body bytes if it's too larget
       def bodyBytes = response.responseDetails.bodyBytes
@@ -131,7 +130,6 @@ public class RequestManager {
             new ByteArrayInputStream(response.responseDetails.bodyBytes as byte[])).bytes
       }
    }
-   */
 
 
    private deflateObjectToByteArray(obj) {

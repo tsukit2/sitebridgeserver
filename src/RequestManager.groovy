@@ -17,7 +17,8 @@ public class RequestManager {
       // queue it up first
       long index = memcache.increment('lastRequestIndex', 1)
       log.info("index = $index")
-      memcache['request' + index] = [requestIndex:index, requestDetails:request]
+      memcache['request' + index] = deflateObjectToByteArray(
+         [requestIndex:index, requestDetails:request])
 
       // now lock on it and wait for it until someone satisfy it
       log.info("request queue...waiting")
@@ -35,7 +36,8 @@ public class RequestManager {
          response = memcache['response' + index]
          log.info("waiting for: " + index)
       }
-      resembleBodyBytesIfTooLarge(response)
+      response = inflateByteArrayToObj(response)
+      //resembleBodyBytesIfTooLarge(response)
       memcache.deleteAll(['request' + index, 'response' + index])
       return response
    }
@@ -50,7 +52,7 @@ public class RequestManager {
       if (lastRequestIndex != null && lastServeIndex != null && lastRequestIndex > lastServeIndex) {
          def index = memcache.increment('lastServeIndex', 1)
          log.info("found request ${index}")
-         return memcache['request' + index]
+         return inflateByteArrayToObj(memcache['request' + index])
       }
 
       // reach here, there is nothing
@@ -60,8 +62,8 @@ public class RequestManager {
    public satisfyRequest(response) {
       log.info("response ${response.responseIndex}")
       response = convertToMapAndArray(response)
-      breakBodyBytesIfTooLarge(response)
-      memcache['response' + response.responseIndex] = response
+      //breakBodyBytesIfTooLarge(response)
+      memcache['response' + response.responseIndex] = deflateObjectToByteArray(response)
    }
 
    // utility method to convert json object to map and array
@@ -78,6 +80,7 @@ public class RequestManager {
       }
    }
 
+   /*
    private breakBodyBytesIfTooLarge(response) {
       // break the body bytes if it's too larget
       def bodyBytes = response.responseDetails.bodyBytes
@@ -97,7 +100,7 @@ public class RequestManager {
          // then replace each chuck with name reference to memcache value
          newBodyBytes.size().times { index ->
             def name = "response${response.responseIndex}-bodyByte${index}".toString()
-            memcache[name] = newBodyBytes[index]
+            memcache[name] = deflateObjectToByteArray(newBodyBytes[index])
             newBodyBytes[index] = name
          }
 
@@ -113,7 +116,7 @@ public class RequestManager {
          // resemble the bytes together again and remove cache
          def newBodyBytes = []
          bodyBytes.each { name -> 
-            newBodyBytes.addAll(memcache[name]) 
+            newBodyBytes.addAll(inflateByteArrayToObj(memcache[name])) 
             memcache.delete(name)
          }
 
@@ -127,6 +130,22 @@ public class RequestManager {
          response.responseDetails.bodyBytes = new GZIPInputStream(
             new ByteArrayInputStream(response.responseDetails.bodyBytes as byte[])).bytes
       }
+   }
+   */
+
+
+   private deflateObjectToByteArray(obj) {
+      def bytes = new ByteArrayOutputStream()
+      def outstream = new ObjectOutputStream(new GZIPOutputStream(bytes))
+      outstream.writeObject(obj)
+      outstream.close()
+      bytes.toByteArray()
+   }
+
+   private inflateByteArrayToObj(bytearray) {
+      return new ObjectInputStream(
+         new GZIPInputStream(new ByteArrayInputStream(bytearray))).readObject()
+
    }
 }
 

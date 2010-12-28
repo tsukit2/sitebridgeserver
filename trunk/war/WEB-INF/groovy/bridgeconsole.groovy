@@ -29,13 +29,17 @@ query = {
    }
 
    headers.contentType = 'text/json'
-   println JSONArray.fromObject(requests).toString()
+   println JSONObject.fromObject(
+      [payload:MiscUtility.deflateObjectToByteArray(
+         JSONArray.fromObject(requests).toString())]).toString()
 }
 
 satisfy = {
    def body = request.reader.text
    //log.info("satisfying ${body}")
-   def response = JSONObject.fromObject(body)
+   def response = JSONObject.fromObject(
+      MiscUtility.inflateByteArrayToObj(
+         MiscUtility.convertToMapAndArray(JSONObject.fromObject(body).payload) as byte[]))
    log.info("satisfying request = ${response.responseIndex}")
    def manager = new RequestManager(memcache)
    manager.satisfyRequest(response)

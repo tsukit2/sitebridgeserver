@@ -37,12 +37,16 @@ query = {
 satisfy = {
    def body = request.reader.text
    //log.info("satisfying ${body}")
-   def response = JSONObject.fromObject(
+   def responses = JSONArray.fromObject(
       MiscUtility.inflateByteArrayToObj(
          MiscUtility.convertToMapAndArray(JSONObject.fromObject(body).payload) as byte[]))
-   log.info("satisfying request = ${response.responseIndex}")
+
+   // for each response, satisfy it
    def manager = new RequestManager(memcache)
-   manager.satisfyRequest(response)
+   responses.each { 
+      log.info("satisfying request = ${it.responseIndex}")
+      manager.satisfyRequest(it)
+   }
 
    headers.contentType = 'text/json'
    println JSONObject.fromObject([satisfied:true]).toString()

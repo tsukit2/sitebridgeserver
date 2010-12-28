@@ -30,11 +30,19 @@ public class RequestManager {
    private waitFor(index) {
       def response = memcache['response' + index]
       log.info("waiting for: " + index)
-      while (!response) {
-         Thread.currentThread().sleep(1000)
+      def startTime = System.currentTimeMillis()
+      // only wait for 15 seconds
+      while (!response && System.currentTimeMillis() - startTime < 20000) {
+         Thread.currentThread().sleep(500)
          response = memcache['response' + index]
          log.info("waiting for: " + index)
       }
+
+      // if reach here, still no response, throw exception
+      if (!response) {
+         throw new RuntimeException('Too long to wait for response')
+      }
+
       response = MiscUtility.inflateByteArrayToObj(response)
       resembleBodyBytesIfTooLarge(response)
       memcache.deleteAll(['request' + index, 'response' + index])

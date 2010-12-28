@@ -2,7 +2,6 @@ import java.util.concurrent.CountDownLatch
 import groovyx.gaelyk.logging.GroovyLogger
 import com.google.appengine.api.memcache.MemcacheService
 import net.sf.json.*
-import java.util.zip.*
 
 public class RequestManager {
    private static log = new GroovyLogger(RequestManager.class.name)
@@ -17,7 +16,7 @@ public class RequestManager {
       // queue it up first
       long index = memcache.increment('lastRequestIndex', 1)
       log.info("index = $index")
-      memcache['request' + index] = deflateObjectToByteArray(
+      memcache['request' + index] = MiscUtility.deflateObjectToByteArray(
          [requestIndex:index, requestDetails:request])
 
       // now lock on it and wait for it until someone satisfy it
@@ -36,8 +35,8 @@ public class RequestManager {
          response = memcache['response' + index]
          log.info("waiting for: " + index)
       }
-      response = inflateByteArrayToObj(response)
-      //resembleBodyBytesIfTooLarge(response)
+      response = MiscUtility.inflateByteArrayToObj(response)
+      resembleBodyBytesIfTooLarge(response)
       memcache.deleteAll(['request' + index, 'response' + index])
       return response
    }
@@ -52,7 +51,7 @@ public class RequestManager {
       if (lastRequestIndex != null && lastServeIndex != null && lastRequestIndex > lastServeIndex) {
          def index = memcache.increment('lastServeIndex', 1)
          log.info("found request ${index}")
-         return inflateByteArrayToObj(memcache['request' + index])
+         return MiscUtility.inflateByteArrayToObj(memcache['request' + index])
       }
 
       // reach here, there is nothing
@@ -61,23 +60,9 @@ public class RequestManager {
 
    public satisfyRequest(response) {
       log.info("response ${response.responseIndex}")
-      response = convertToMapAndArray(response)
-      //breakBodyBytesIfTooLarge(response)
-      memcache['response' + response.responseIndex] = deflateObjectToByteArray(response)
-   }
-
-   // utility method to convert json object to map and array
-   private convertToMapAndArray(jsonObj) {
-      switch(jsonObj) {
-         case List: 
-            return jsonObj.inject([]) { l, elem -> l << convertToMapAndArray(elem); l }
-         case Map:  
-            return jsonObj.inject([:]) { m, entry -> m[entry.key] = convertToMapAndArray(entry.value); m }
-         case JSONNull:
-            return null
-         default:   
-            return jsonObj
-      }
+      response = MiscUtility.convertToMapAndArray(response)
+      breakBodyBytesIfTooLarge(response)
+      memcache['response' + response.responseIndex] = MiscUtility.deflateObjectToByteArray(response)
    }
 
    private breakBodyBytesIfTooLarge(response) {
@@ -99,7 +84,7 @@ public class RequestManager {
          // then replace each chuck with name reference to memcache value
          newBodyBytes.size().times { index ->
             def name = "response${response.responseIndex}-bodyByte${index}".toString()
-            memcache[name] = deflateObjectToByteArray(newBodyBytes[index])
+            memcache[name] = MiscUtility.deflateObjectToByteArray(newBodyBytes[index])
             newBodyBytes[index] = name
          }
 
@@ -115,7 +100,7 @@ public class RequestManager {
          // resemble the bytes together again and remove cache
          def newBodyBytes = []
          bodyBytes.each { name -> 
-            newBodyBytes.addAll(inflateByteArrayToObj(memcache[name])) 
+            newBodyBytes.addAll(MiscUtility.inflateByteArrayToObj(memcache[name])) 
             memcache.delete(name)
          }
 
@@ -124,26 +109,13 @@ public class RequestManager {
          //println("**** ${response.responseDetails.bodyBytes.size()}")
       }
 
+      /*
       // decompress the body bytes no matter what
       if (response.responseDetails.bodyBytes) {
          response.responseDetails.bodyBytes = new GZIPInputStream(
             new ByteArrayInputStream(response.responseDetails.bodyBytes as byte[])).bytes
       }
-   }
-
-
-   private deflateObjectToByteArray(obj) {
-      def bytes = new ByteArrayOutputStream()
-      def outstream = new ObjectOutputStream(new GZIPOutputStream(bytes))
-      outstream.writeObject(obj)
-      outstream.close()
-      bytes.toByteArray()
-   }
-
-   private inflateByteArrayToObj(bytearray) {
-      return new ObjectInputStream(
-         new GZIPInputStream(new ByteArrayInputStream(bytearray))).readObject()
-
+      */
    }
 }
 

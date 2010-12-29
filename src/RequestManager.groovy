@@ -21,18 +21,18 @@ public class RequestManager {
 
       // now lock on it and wait for it until someone satisfy it
       log.info("request queue...waiting")
-      def response = waitFor(index)
+      def response = waitFor(index, request)
 
       // once you reach here, the request has been satisfied
       return response
    }
 
-   private waitFor(index) {
+   private waitFor(index, request) {
       def response = memcache['response' + index]
-      log.info("waiting for: " + index)
-      def startTime = System.currentTimeMillis()
+      log.info("waiting for: ${index} - ${request.pathInfo}")
+      //def startTime = System.currentTimeMillis()
       // only wait for 15 seconds
-      while (!response && System.currentTimeMillis() - startTime < 20000) {
+      while (!response /*&& System.currentTimeMillis() - startTime < 30000*/) {
          Thread.currentThread().sleep(500)
          response = memcache['response' + index]
          log.info("waiting for: " + index)
@@ -49,28 +49,41 @@ public class RequestManager {
       return response
    }
 
-   public getNextPendingRequest() {
+   public getNextPendingRequests() {
       def lastRequestIndex = memcache['lastRequestIndex']
       def lastServeIndex = memcache['lastServeIndex']
       log.info("lastRequestIndex = ${lastRequestIndex}, lastServeIndex = ${lastServeIndex}")
 
-
       // has pending request if
       if (lastRequestIndex != null && lastServeIndex != null && lastRequestIndex > lastServeIndex) {
-         def index = memcache.increment('lastServeIndex', 1)
-         log.info("found request ${index}")
-         return MiscUtility.inflateByteArrayToObj(memcache['request' + index])
+         def names = ((lastServeIndex+1)..lastRequestIndex).collect { index -> 'request' + index }
+         //println "**** ${names}"
+         def requests = memcache.getAll(names).values()
+         memcache.increment('lastServeIndex', lastRequestIndex - lastServeIndex)
+         return requests.collect { MiscUtility.inflateByteArrayToObj(it) }
       }
 
       // reach here, there is nothing
-      return null
+      return []
    }
 
-   public satisfyRequest(response) {
-      log.info("response ${response.responseIndex}")
-      response = MiscUtility.convertToMapAndArray(response)
-      breakBodyBytesIfTooLarge(response)
-      memcache['response' + response.responseIndex] = MiscUtility.deflateObjectToByteArray(response)
+   public satisfyRequests(responses) {
+      /*
+      def responseMap = responses.inject([:]) { map, response ->
+         log.info("response ${response.responseIndex}")
+         response = MiscUtility.convertToMapAndArray(response)
+         breakBodyBytesIfTooLarge(response)
+         map['response' + response.responseIndex] = MiscUtility.deflateObjectToByteArray(response)
+         return map
+      }
+      memcache.putAll(responseMap)
+      */
+
+      responses.each { response ->
+         response = MiscUtility.convertToMapAndArray(response)
+         breakBodyBytesIfTooLarge(response)
+         memcache['response' + response.responseIndex] = MiscUtility.deflateObjectToByteArray(response)
+      }
    }
 
    private breakBodyBytesIfTooLarge(response) {
@@ -90,11 +103,13 @@ public class RequestManager {
          //println "**** ${newBodyBytes.size()}"
 
          // then replace each chuck with name reference to memcache value
+         def chunks = [:]
          newBodyBytes.size().times { index ->
             def name = "response${response.responseIndex}-bodyByte${index}".toString()
-            memcache[name] = MiscUtility.deflateObjectToByteArray(newBodyBytes[index])
+            chunks[name] = MiscUtility.deflateObjectToByteArray(newBodyBytes[index])
             newBodyBytes[index] = name
          }
+         memcache.putAll(chunks)
 
          // finally replace the body bytes with the new one
          response.responseDetails.bodyBytes = newBodyBytes
@@ -106,10 +121,11 @@ public class RequestManager {
       def bodyBytes = response.responseDetails.bodyBytes
       if (bodyBytes.size() && bodyBytes.first() instanceof String) {
          // resemble the bytes together again and remove cache
+         def chunks = memcache.getAll(bodyBytes)
+         memcache.deleteAll(bodyBytes)
          def newBodyBytes = []
          bodyBytes.each { name -> 
-            newBodyBytes.addAll(MiscUtility.inflateByteArrayToObj(memcache[name])) 
-            memcache.delete(name)
+            newBodyBytes.addAll(MiscUtility.inflateByteArrayToObj(chunks[name])) 
          }
 
          // finally replace the body bytes with the new one

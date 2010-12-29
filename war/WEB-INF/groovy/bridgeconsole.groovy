@@ -39,7 +39,7 @@ warmup = {
 
 query = {
    def manager = new RequestManager(memcache)
-   def requests = timeit("getNextPendingRequests") { manager.getNextPendingRequests() }
+   def requests = timeit("getNextPendingRequests") { manager.getNextPendingRequests(3) }
 
    headers.contentType = 'text/json'
 

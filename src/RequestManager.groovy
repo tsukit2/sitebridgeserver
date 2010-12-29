@@ -49,17 +49,18 @@ public class RequestManager {
       return response
    }
 
-   public getNextPendingRequests() {
+   public getNextPendingRequests(limit) {
       def lastRequestIndex = memcache['lastRequestIndex']
       def lastServeIndex = memcache['lastServeIndex']
       log.info("lastRequestIndex = ${lastRequestIndex}, lastServeIndex = ${lastServeIndex}")
 
       // has pending request if
       if (lastRequestIndex != null && lastServeIndex != null && lastRequestIndex > lastServeIndex) {
-         def names = ((lastServeIndex+1)..lastRequestIndex).collect { index -> 'request' + index }
+         def upperLimit = Math.min(lastServeIndex + limit, lastRequestIndex)
+         def names = ((lastServeIndex+1)..upperLimit).collect { index -> 'request' + index }
          //println "**** ${names}"
          def requests = memcache.getAll(names).values()
-         memcache.increment('lastServeIndex', lastRequestIndex - lastServeIndex)
+         memcache.increment('lastServeIndex', upperLimit - lastServeIndex)
          return requests.collect { MiscUtility.inflateByteArrayToObj(it) }
       }
 

@@ -3,7 +3,11 @@ def myrequest = [
    method:request.method,
    pathInfo:params.pathInfo,
    query:constructQueryMap(request.queryString),
-   headers:new HashMap(headers),
+   headers:request.headerNames.inject([:]) { m,n ->
+      def values = request.getHeaders(n).inject([]) { l,v -> l << v; v }
+      m[n] = values.size() == 1 ? values[0] : values
+      return m
+   },
    params:new HashMap(params),
    bodyBytes:request.inputStream.bytes
    ]
@@ -17,7 +21,11 @@ def myresponse = manager.processRequest(myrequest)
 response.status = myresponse.responseDetails.status
 myresponse.responseDetails.headers?.each  { k,v ->
    if (k != 'Content-Encoding') {
-      response.setHeader(k,v)
+      if (v instanceof List) {
+         v.each { response.setHeader(k,it) }
+      } else {
+         response.setHeader(k,v)
+      }
    }
 }
 //log.info(new String(myresponse.responseDetails.bodyBytes as byte[]))

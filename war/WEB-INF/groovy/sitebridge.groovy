@@ -1,14 +1,16 @@
 // create request object
+def queryMap = constructQueryMap(request.queryString)
+def paramsMap = constructParamsMap(queryMap, params)
 def myrequest = [
    method:request.method,
    pathInfo:params.pathInfo,
-   query:constructQueryMap(request.queryString),
+   query:queryMap,
    headers:request.headerNames.inject([:]) { m,n ->
       def values = request.getHeaders(n).inject([]) { l,v -> l << v; v }
       m[n] = values.size() == 1 ? values[0] : values
       return m
    },
-   params:new HashMap(params),
+   params:paramsMap,
    bodyBytes:request.inputStream.bytes
    ]
 
@@ -22,9 +24,10 @@ response.status = myresponse.responseDetails.status
 myresponse.responseDetails.headers?.each  { k,v ->
    if (k != 'Content-Encoding') {
       if (v instanceof List) {
-         v.each { response.setHeader(k,it) }
+         v.each { response.addHeader(k,it); System.out.println "${k} = ${it}" }
       } else {
-         response.setHeader(k,v)
+         System.out.println "${k} = ${v}"
+         response.addHeader(k,v)
       }
    }
 }
@@ -44,4 +47,11 @@ def constructQueryMap(queryStr) {
       return null
    }
 }
+
+def constructParamsMap(queryMap, params) {
+   def paramsMap = new HashMap(params) - queryMap
+   paramsMap.remove('pathInfo')
+   return paramsMap
+}
+
 

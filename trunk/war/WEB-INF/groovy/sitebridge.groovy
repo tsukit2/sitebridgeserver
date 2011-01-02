@@ -39,7 +39,7 @@ def constructQueryMap(queryStr) {
       return queryStr.split('&').inject([:]) { m,v -> 
          def s = v.split('=')
          if (s[0] != 'pathInfo') {
-            m[s[0]] = s.size() == 2 ? s[1] : ''
+            m[s[0]] = s.size() == 2 ? URLDecoder.decode(s[1], 'utf8') : ''
          }
          return m
       }
@@ -49,9 +49,10 @@ def constructQueryMap(queryStr) {
 }
 
 def constructParamsMap(queryMap, params) {
-   def paramsMap = new HashMap(params) - queryMap
+   def paramsMap = new HashMap(params)
+   queryMap?.keySet().each { paramsMap.remove(it) }
    paramsMap.remove('pathInfo')
-   return paramsMap
+   return paramsMap ?: null
 }
 
 

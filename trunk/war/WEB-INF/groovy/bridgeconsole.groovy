@@ -55,7 +55,7 @@ satisfy = {
    //log.info("satisfying ${body}")
    def responses = timeit("Deserialize input") { JSONArray.fromObject(
       MiscUtility.inflateByteArrayToObj(
-         MiscUtility.convertToMapAndArray(JSONObject.fromObject(body).payload) as byte[]))
+         MiscUtility.convertIntegerListToByteArray(JSONObject.fromObject(body).payload)))
    }
 
    // satisfy all requests

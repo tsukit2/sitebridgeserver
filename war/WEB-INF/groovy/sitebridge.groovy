@@ -1,3 +1,4 @@
+
 // create request object
 def queryMap = constructQueryMap(request.queryString)
 def paramsMap = constructParamsMap(queryMap, params)
@@ -32,7 +33,8 @@ myresponse.responseDetails.headers?.each  { k,v ->
    }
 }
 //log.info(new String(myresponse.responseDetails.bodyBytes as byte[]))
-response.outputStream << (myresponse.responseDetails.bodyBytes as byte[])
+response.outputStream << 
+   MiscUtility.convertIntegerListToByteArray(myresponse.responseDetails.bodyBytes)
 
 def constructQueryMap(queryStr) {
    if (queryStr) {

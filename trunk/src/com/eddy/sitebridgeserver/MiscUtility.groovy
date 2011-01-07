@@ -1,3 +1,5 @@
+package com.eddy.sitebridgeserver
+
 import net.sf.json.*
 import java.util.zip.*
 

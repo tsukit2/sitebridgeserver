@@ -1,5 +1,6 @@
 import net.sf.json.*
-import net.sf.json.groovy.*;
+import net.sf.json.groovy.*
+import com.eddy.sitebridgeserver.*
 
 index = {
    println "this is index"
@@ -7,11 +8,8 @@ index = {
 }
 
 reset = {
-   // clear all memcache
-   memcache.clearAll()
-   memcache['lastRequestIndex'] = 0
-   memcache['lastServeIndex'] = 0
-
+   // reset it
+   new BridgeManager(memcache).reset()
    headers.contentType = 'text/json'
    println JSONObject.fromObject([status:true]).toString()
 }
@@ -20,47 +18,28 @@ status = {
    println "system is up"
 }
 
-def timeit(label, closure) {
-   def startTime = System.currentTimeMillis()
-   def ret = closure()
-   log.info("${label}: ${System.currentTimeMillis() - startTime} ms")
-   return ret
-}
-
 warmup = {
-   def data = (1..100).collect { new Date() }
-   def sysprop = MiscUtility.convertToMapAndArray(JSONArray.fromObject(data))
-   def deflate = MiscUtility.deflateObjectToByteArray(sysprop)
-   def inflate = MiscUtility.inflateByteArrayToObj(deflate)
-
+   new BridgeManager(memcache).warmup()
    headers.contentType = 'text/json'
-   println JSONArray.fromObject(inflate).toString()
+   println JSONObject.fromObject([status:true]).toString()
 }
 
 query = {
-   def manager = new RequestManager(memcache)
-   def requests = timeit("getNextPendingRequests") { manager.getNextPendingRequests(3) }
+   // query for requests
+   def manager = new BridgeManager(memcache)
+   def requests = manager.getNextPendingRequests(3)
 
+   // respond to caller
    headers.contentType = 'text/json'
-
-   timeit("Serialize JSON") {
-      println JSONObject.fromObject(
-         [payload:MiscUtility.deflateObjectToByteArray(
-            JSONArray.fromObject(requests).toString())]).toString()
-   }
+   println JSONObject.fromObject(
+      [payload:MiscUtility.deflateObjectToByteArray(
+         JSONArray.fromObject(requests).toString())]).toString()
 }
 
 satisfy = {
-   def body = request.reader.text
-   //log.info("satisfying ${body}")
-   def responses = timeit("Deserialize input") { JSONArray.fromObject(
-      MiscUtility.inflateByteArrayToObj(
-         MiscUtility.convertIntegerListToByteArray(JSONObject.fromObject(body).payload)))
-   }
-
    // satisfy all requests
-   def manager = new RequestManager(memcache)
-   timeit("Satisfy request") { manager.satisfyRequests(responses) }
+   def manager = new BridgeManager(memcache)
+   manager.satisfyRequests(request)
 
    headers.contentType = 'text/json'
    println JSONObject.fromObject([satisfied:true]).toString()

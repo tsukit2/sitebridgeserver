@@ -70,7 +70,7 @@ public class BridgeManager {
          headers:request.headerNames.inject([:]) { m,n ->
             def values = request.getHeaders(n).inject([]) { l,v -> l << v; v }
             m[n] = values.size() == 1 ? values[0] : values
-               return m
+            return m
          },
          params:paramsMap,
          bodyBytes:request.inputStream.bytes
@@ -90,8 +90,13 @@ public class BridgeManager {
          return queryStr.split('&').inject([:]) { m,v -> 
             def s = v.split('=')
             if (s[0] != 'pathInfo') {
-               // TODO: support multiple values
-               m[s[0]] = s.size() == 2 ? URLDecoder.decode(s[1], 'utf8') : ''
+               def newval = s.size() == 2 ? URLDecoder.decode(s[1], 'utf8') : ''
+               if (m.containsKey(s[0])) {
+                  def val = m[s[0]]
+                  m[s[0]] = val instanceof List ? val << newval : [val, newval]
+               } else {
+                  m[s[0]] = newval
+               }
             }
             return m
          }

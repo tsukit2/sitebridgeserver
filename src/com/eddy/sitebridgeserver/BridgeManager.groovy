@@ -11,6 +11,7 @@ import net.sf.json.*
  */
 public class BridgeManager {
    private static log = new GroovyLogger(this.name)
+   private static long CHUNK_SIZE               = 900 * 1024  // make it 900K max
 
    private memcache
 
@@ -215,12 +216,11 @@ public class BridgeManager {
    private breakBodyBytesIfTooLarge(Map response) {
       // break the body bytes if it's too larget
       def bodyBytes = response.responseDetails.bodyBytes
-      def chuckSize = 7680
-      if (bodyBytes.size() > chuckSize) {
+      if (bodyBytes.size() > CHUNK_SIZE) {
          // break into chucks
          def newBodyBytes = []
          bodyBytes.eachWithIndex { v,i -> 
-            if (i % chuckSize == 0) {
+            if (i % CHUNK_SIZE == 0) {
                newBodyBytes << [v] 
             } else {
                newBodyBytes.last() << v 

@@ -23,9 +23,7 @@
     -->
 
     <!-- turn off because we have warmup request from clients already -->
-    <!-- this needs to be commented out when running local server. Weird?
     <warmup-requests-enabled>false</warmup-requests-enabled>
-    -->
 
     <!-- It it advised to keep this parameter to true -->
     <!-- as per the release of SDK 1.2.8, -->

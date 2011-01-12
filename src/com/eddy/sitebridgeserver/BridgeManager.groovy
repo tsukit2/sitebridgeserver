@@ -188,12 +188,12 @@ public class BridgeManager {
     *
     * @param servletRequest         Servlet request.
     */
-   void satisfyRequests(HttpServletRequest servletRequest) {
+   void satisfyRequests(List responses) {
+      /*
       // construct the responses from the servlet request
-      def body = servletRequest.reader.text
       def responses =  JSONArray.fromObject(
-         MiscUtility.inflateByteArrayToObj(
-            MiscUtility.convertIntegerListToByteArray(JSONObject.fromObject(body).payload)))
+         MiscUtility.inflateByteArrayToObj(servletRequest.inputStream.bytes))
+      */
 
       // note that we don't use the batch version of the memcache methods to satify multiple requests
       // at once The reason is that there could be multiple server waiting for different responses. If

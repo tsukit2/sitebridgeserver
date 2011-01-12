@@ -30,16 +30,14 @@ query = {
    def requests = manager.getNextPendingRequests(3)
 
    // respond to caller
-   headers.contentType = 'text/json'
-   println JSONObject.fromObject(
-      [payload:MiscUtility.deflateObjectToByteArray(
-         JSONArray.fromObject(requests).toString())]).toString()
+   headers.contentType = 'application/octet-stream'
+   sout << MiscUtility.deflateObjectToByteArray(JSONArray.fromObject(requests).toString())
 }
 
 satisfy = {
    // satisfy all requests
    def manager = new BridgeManager(memcache)
-   manager.satisfyRequests(request)
+   manager.satisfyRequests(JSONArray.fromObject(MiscUtility.inflateByteArrayToObj(request.inputStream.bytes)))
 
    headers.contentType = 'text/json'
    println JSONObject.fromObject([satisfied:true]).toString()

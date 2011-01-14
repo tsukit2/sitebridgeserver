@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Welcome to SiteBridge! SiteBridge allows you bridge a Google App Engine (GAE) site to a target site such that it the GAE site looks and behaves identically to the target site - provided that proper transformers are written. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
+Welcome to SiteBridge! SiteBridge allows you to bridge a Google App Engine (GAE) site to a target site such that it the GAE site looks and behaves identically to the target site - provided that proper transformers are written. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
 
 = Why? =
 
@@ -10,4 +10,10 @@ SiteBridge was initially and purposely created to remove the pain of its author,
 
 = What Can I Do With It =
 
-If
+If you are like Ed, you will appreciate the existence of this project without much explanation. Anyhow, these are some scenarios that you might want to use it for.
+
+  * Ed's situation. See "Why?". 
+  * You are working for a client. You want to showcase what you have been developing for them. However, you don't have a site set up yet so that they can access it (e.g. the site doesn't exist yet in case of a brand new site, or it's being occupied by a production version in case of you are making changes to it).
+  * Customers are reporting problems with your production site. You don't find much on the logs how the problems occur. You want to be able to see how the information flow in and out of your site when they are using.
+  * You want to observe how a certain site works. 
+  * You want to create a fake site so that you can steal people's confidential information <- PLEASE DO NOT DO THIS! IT'S ILLEGAL.

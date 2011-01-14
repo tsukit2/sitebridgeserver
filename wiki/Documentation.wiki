@@ -1,0 +1,13 @@
+#SiteBridge documentation
+
+= Introduction =
+
+Welcome to SiteBridge! SiteBridge allows you bridge a Google App Engine (GAE) site to a target site such that it the GAE site looks and behaves identically to the target site - provided that proper transformers are written. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
+
+= Why? =
+
+SiteBridge was initially and purposely created to remove the pain of its author, Ed Tretriluxana, that'd been irritating him when developing web-based and server-backed mobile applications. Why? His development environment is behind a firewall, a usual setup for almost all enterprise development. He very often needs to test/troubleshoot the apps on these mobile devices. Unfortunately these devices do not and cannot see his development or internal sites because they are not on the same network. For security reason, the company doesn't provide any WIFI network that these devices can get on so that they will be able to see his server-side systems. So all he'd been ending doing in the past was to use simulators or browser plugins to imitate these devices. However, they are and never will be the same. He wants to temporarily make the site accessible to devices.
+
+= What Can I Do With It =
+
+If

@@ -1,5 +1,3 @@
-#SiteBridge documentation
-
 = Introduction =
 
 Welcome to SiteBridge! SiteBridge allows you to bridge a Google App Engine (GAE) site to a target site such that it the GAE site looks and behaves identically to the target site - provided that proper transformers are written. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 

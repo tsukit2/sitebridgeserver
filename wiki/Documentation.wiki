@@ -1,6 +1,6 @@
 = Introduction =
 
-Welcome to SiteBridge! SiteBridge allows you to bridge a Google App Engine (GAE) site to a target site such that it the GAE site looks and behaves identically to the target site - provided that proper transformers are written. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
+Welcome to `SiteBridge`! `SiteBridge` allows you to bridge a Google App Engine (GAE) site to a target site such that it the GAE site looks and behaves identically to the target site - provided that proper transformers are written. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
 
 = Why? =
 
@@ -15,3 +15,8 @@ If you are like Ed, you will appreciate the existence of this project without mu
   * Customers are reporting problems with your production site. You don't find much on the logs how the problems occur. You want to be able to see how the information flow in and out of your site when they are using.
   * You want to observe how a certain site works. 
   * You want to create a fake site so that you can steal people's confidential information <- PLEASE DO NOT DO THIS! IT'S ILLEGAL.
+  * ...
+
+= How Does It Work =
+
+SiteBridge works very simply. Basically there are two components: server and client. The server is a GAE application. You create one for yourself then deploy SiteBrigeServer into it. For client, the SiteBridgeClient is a command-line Java app (written in Groovy). When run, the client connects to the server querying for any pending request. If so, the original request is obtained, transformed, and relayed to the target site. Once the response is received, the client transforms and passes it back to the server. Then the server relays it back to the original client. 

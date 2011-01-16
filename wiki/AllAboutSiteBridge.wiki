@@ -23,7 +23,7 @@ If you are like Ed, you will appreciate the existence of this project without mu
 
 = How Does It Work? =
 
-SiteBridge works very simply. Basically there are two components: server and client. The server is a GAE application. You create one for yourself then deploy SiteBrigeServer into it. For client, the SiteBridgeClient is a command-line Java app (written in Groovy). When run, the client connects to the server querying for any pending requests. If so, the original requests are obtained, transformed, and relayed to the target site. Once the responses are received, the client transforms and passes them back to the server. Then the server relays them back to the original client. The final effect is the bridge site behave identically as the target site.
+!SiteBridge works very simply. Basically there are two components: server and client. The server is a GAE application. You create one for yourself then deploy !SiteBrigeServer into it. For client, the !SiteBridgeClient is a command-line Java app (written in Groovy). When run, the client connects to the server querying for any pending requests. If so, the original requests are obtained, transformed, and relayed to the target site. Once the responses are received, the client transforms and passes them back to the server. Then the server relays them back to the original client. The final effect is the bridge site behave identically as the target site.
 
 = What Transformers? =
 
@@ -31,20 +31,20 @@ When you bridge a site, you cannot just present the content of one via the other
 
 A transformer is a groovy script that you can specify when running the client. Transforms will be presented with every request and response the client see. They can observe and manipulate HTTP elements (e.g. headers, body) before they are sent to GAE server app. This way any site being bridged can be theoretically re-presented seamlessly through the bridge GAE site.
 
-For convenience, a basic/default is provided which you can use as it or enhance it. Also, since SiteBridgeClient support a chain of multiple transformers, you write your own and add it to the chain.
+For convenience, a basic/default is provided which you can use as it or enhance it. Also, since !SiteBridgeClient support a chain of multiple transformers, you write your own and add it to the chain.
 
 = Should/Can I Use It? =
 
-SiteBridge is not for everyone - period. All GAE apps must follow a rule that all requests must be fulfilled. That means web sites with heavy graphics will likely have problems because graphics take time to hop around and we got many hops happening between server and client. Note that this is a deliberate design choice (not an overlook) so that client can be used even in the most restricted environment.
+!SiteBridge is not for everyone - period. All GAE apps must follow a rule that all requests must be fulfilled. That means web sites with heavy graphics will likely have problems because graphics take time to hop around and we got many hops happening between server and client. Note that this is a deliberate design choice (not an overlook) so that client can be used even in the most restricted environment.
 
-Given above, this explains why SiteBridge excels with mobile sites (usually these sites are very light) and regular sites with moderate graphic contents.  
+Given above, this explains why !SiteBridge excels with mobile sites (usually these sites are very light) and regular sites with moderate graphic contents.  
 
 = Isn't It Warm Enough? =
 
-GAE apps are known to have an issue with latency when new server processes are created dynamically as the load is increasing. SiteBridgeServer is no exception and this creates problem because the latency is counted toward the total time a request can wait. Without doing anything, you can experience often timeout on requests.
+GAE apps are known to have an issue with latency when new server processes are created dynamically as the load is increasing. !SiteBridgeServer is no exception and this creates problem because the latency is counted toward the total time a request can wait. Without doing anything, you can experience often timeout on requests.
 
-In order to circumvent this, SiteBridge has a process (coordinated by both server and client) to keep the server warm. Client makes a bunch of connections back to the server to do some foobar computation. This causes GAE to spawn off more server instances. Client keeps doing this periodically to keep these server alive. So when the actual requests coming in, GAE got enough server processes to serve the request.
+In order to circumvent this, !SiteBridge has a process (coordinated by both server and client) to keep the server warm. Client makes a bunch of connections back to the server to do some foobar computation. This causes GAE to spawn off more server instances. Client keeps doing this periodically to keep these server alive. So when the actual requests coming in, GAE got enough server processes to serve the request.
 
 = One Last Thing!?! =
 
-SiteBridgeClient tracks all information it receives and sends. This allows it to offer, with no extra charge, an extensive reports on what's going on when you interact with SiteBridge. The report has information like what requests were made and what responses were returned. You can examine headers and actual contents. This is available for both browser-vs-SiteBridgeServer and SiteBridgeClient-vs-TargetSite interactions. You can generate an HTML report simply by running the client.
+!SiteBridgeClient tracks all information it receives and sends. This allows it to offer, with no extra charge, an extensive reports on what's going on when you interact with !SiteBridge. The report has information like what requests were made and what responses were returned. You can examine headers and actual contents. This is available for both browser-vs-!SiteBridgeServer and !SiteBridgeClient-vs-targetsite interactions. You can generate an HTML report simply by running the client.

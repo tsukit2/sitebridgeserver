@@ -1,6 +1,6 @@
 #summary Installation instructions and how to run things
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 * If you haven't read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge Introduction] to understand !SiteBridge, it's strongly recommended to do so first.
 

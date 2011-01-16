@@ -1,0 +1,5 @@
+#summary Installation instructions and how to run things
+
+= Overall =
+
+As in the Introduction, you need to two components of SiteBridge to make the magic happen: SiteBridgeServer and SiteBridgeClient.

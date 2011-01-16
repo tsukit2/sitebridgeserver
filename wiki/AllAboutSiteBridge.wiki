@@ -44,3 +44,5 @@ GAE apps are known to have an issue with latency when new server processes are c
 In order to circumvent this, SiteBridge has a process (coordinated by both server and client) to keep the server warm. Client makes a bunch of connections back to the server to do some foobar computation. This causes GAE to spawn off more server instances. Client keeps doing this periodically to keep these server alive. So when the actual requests coming in, GAE got enough server processes to serve the request.
 
 = One Last Thing!?! =
+
+SiteBridgeClient tracks all information it receives and sends. This allows it to offer, with no extra charge, an extensive reports on what's going on when you interact with SiteBridge. The report has information like what requests were made and what responses were returned. You can examine headers and actual contents. This is available for both browser-vs-SiteBridgeServer and SiteBridgeClient-vs-TargetSite interactions. You can generate an HTML report simply by running the client.

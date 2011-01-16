@@ -4,4 +4,8 @@
 
 = Overall =
 
-As in the Introduction, you need to two components of SiteBridge to make the magic happen: SiteBridgeServer and SiteBridgeClient.
+As in the Introduction, you need to two components of SiteBridge to make the magic happen: SiteBridgeServer and SiteBridgeClient. Once you got both, the idea is simply installing the server component to as many GAE sites of your own as you want, then you are good to make a bridge to the target site for each GAE site.
+
+= Install SiteBridgeServer =
+
+This is perhaps the easiest part but it a bit requires some involvement. First you need to download Google App Engine *Java SDK*. Sorry GAE doesn't have an option of building ready-to-deploy WAR and a tool that you can do the deployment without having to mess around with the SDK. So go an download/install that. Second you need to 

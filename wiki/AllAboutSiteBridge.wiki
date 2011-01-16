@@ -26,3 +26,11 @@ SiteBridge works very simply. Basically there are two components: server and cli
 When you bridge a site, you cannot just present the content of one via the other and everything will be just fine. Cookies, links, headers, javascripts and whatnots can be site specific. For example, a cookie can be specified for the original site's domain. If passed as is, the browser will never send it back when connecting to the bridge site. 
 
 A transformer is a groovy script that you can specify when running the client. Transforms will be presented with every request and response the client see. They can observe and manipulate HTTP elements (e.g. headers, body) before they are sent to GAE server app. This way any site being bridged can be theoretically re-presented seamlessly through the bridge GAE site.
+
+For convenience, a basic/default is provided which you can use as it or enhance it. Also, since SiteBridgeClient support a chain of multiple transformers, you write your own and add it to the chain.
+
+= Sounds Good To Be True? =
+
+SiteBridge is not for everyone - period. All GEA apps must follow the same rule that all requests must be fullfilled. That means web sites with heavy graphics will likely have problems. This is because there are many hops happening between server and client (Note that this is a deliberate design choice so that client can be used even in the most restricted environment, not a consequence of an overlook).
+
+Given above, this explains why SiteBridge excels with mobile sites (usually these sites are very light) and regular sites with moderate graphic contents.  

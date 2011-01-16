@@ -25,7 +25,7 @@ Assuming everything goes well, this command will generate a bunch of classes in 
 
 Either you build the code yourself or you use the almost-ready-to-deploy war file, you will need to deploy the app to *your own* GAE site. If you haven't created a new GAE application under your account, do so now. See GAE's document on how to create one - very simple.
 
-Once the GAE site/app is created, you are ready to deploy. Before you do just that, edit the following: WEB-INF/appengine-web.xml such that the name in <application> tag matches with your GAE site/app. *You need to do this first otherwise you'll have a hard time deploying it.* The deployment must go to your very own GAE site/app.
+Once the GAE site/app is created, you are ready to deploy. Before you do just that, edit the following: WEB-INF/appengine-web.xml such that the name in *{{{<application>}}}* tag matches with your GAE site/app. *You need to do this first otherwise you'll have a hard time deploying it.* The deployment must go to your very own GAE site/app.
 
 Once editing of WEB-INF/appengine-web.xml is done, execute GAE's command to deploy it. Usually this is the command to do so.
 

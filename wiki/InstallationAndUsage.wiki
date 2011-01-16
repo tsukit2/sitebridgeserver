@@ -41,11 +41,11 @@ Check out any error. You shouldn't be getting one. Once that's you are ready to 
 
 Once you are through with the deployment and everything, you can test if the system is properly install and ready to run by opening the browser and type in the following address.
 
- http://`<your-sitebridge-server-url>`/bridgeconsole/status
+ {{{http://<your-sitebridge-server-url>/bridgeconsole/status}}}
 
  e.g. 
 
- http://myfoobarsitebridge.appspot.com/bridgeconsole/status
+ {{{http://myfoobarsitebridge.appspot.com/bridgeconsole/status}}}
 
 
 Note that your GAE site can be https as well. Modify the address above to match with what you actually have.

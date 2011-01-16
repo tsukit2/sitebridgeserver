@@ -1,19 +1,21 @@
 #summary Installation instructions and how to run things
 
-* If you haven't read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge Introduction] to understand SiteBridge, it's strongly recommended to do so first.
+<wiki:toc max_depth="1" />
+
+* If you haven't read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge Introduction] to understand !SiteBridge, it's strongly recommended to do so first.
 
 = Overall =
 
-As in the Introduction, you need to two components of SiteBridge to make the magic happen: SiteBridgeServer and SiteBridgeClient. Once you got both, the idea is simply installing the server component to as many GAE sites of your own as you want, then you are good to make a bridge to the target site for each GAE site.
+As in the Introduction, you need to two components of !SiteBridge to make the magic happen: !SiteBridgeServer and [http://code.google.com/p/sitebridgeclient/ SiteBridgeClient]. Once you got both, the idea is simply installing the server component to as many GAE sites of your own as you want, then you are good to make a bridge to the target site for each GAE site.
 
-= Install SiteBridgeServer =
+= Install !SiteBridgeServer =
 
 == Requirements ==
-This is perhaps the easiest part but it a bit requires some involvement. First you need to download Google App Engine *Java SDK*. Sorry GAE doesn't have an option of building ready-to-deploy WAR and a tool that you can do the deployment without having to mess around with the SDK. So go an download/install that. Second you need to have Groovy 1.7.5+. Note that this is not strictly needed because you can go with the pre-built already-ready-to-deploy WAR file in the download section. If you choose to build it yourself, go install Groovy system then jump to Build SiteBridgeServer section. If you go with the pre-built WAR file, just jump to Deploy SiteBridgeServer section directly.
+This is perhaps the easiest part but it a bit requires some involvement. First you need to download Google App Engine *Java SDK*. Sorry GAE doesn't have an option of building ready-to-deploy WAR and a tool that you can do the deployment without having to mess around with the SDK. So go an download/install that. Second you need to have Groovy 1.7.5+. Note that this is not strictly needed because you can go with the pre-built already-ready-to-deploy WAR file in the download section. If you choose to build it yourself, go install Groovy system then jump to Build !SiteBridgeServer section. If you go with the pre-built WAR file, just jump to Deploy !SiteBridgeServer section directly.
 
-== Build SiteBridgeServer ==
+== Build !SiteBridgeServer ==
 
-Once you get all the source files of SiteBridgeServer, all you need to do is to go in there and execute the following command to compile class.
+Once you get all the source files of !SiteBridgeServer, all you need to do is to go in there and execute the following command to compile class.
 
 {{{
 groovy build.groovy
@@ -21,7 +23,7 @@ groovy build.groovy
 
 Assuming everything goes well, this command will generate a bunch of classes in war/WEB-INF/classes. This is it for building.
 
-== Deploy SiteBridgeServer ==
+== Deploy !SiteBridgeServer ==
 
 Either you build the code yourself or you use the almost-ready-to-deploy war file, you will need to deploy the app to *your own* GAE site. If you haven't created a new GAE application under your account, do so now. See GAE's document on how to create one - very simple.
 
@@ -35,17 +37,16 @@ appcfg.sh update war
 
 Check out any error. You shouldn't be getting one. Once that's you are ready to smoke test the deployment.
 
-== Smoketest SiteBridgeServer ==
+== Smoketest !SiteBridgeServer ==
 
 Once you are through with the deployment and everything, you can test if the system is properly install and ready to run by opening the browser and type in the following address.
 
-{{{
-http://<your sitebridge server url>/bridgeconsole/status
+ http://<your sitebridge server url>/bridgeconsole/status
 
-e.g. 
+ e.g. 
 
-http://myfoobarsitebridge.appspot.com/bridgeconsole/status
-}}}
+ http://myfoobarsitebridge.appspot.com/bridgeconsole/status
+
 
 Note that your GAE site can be https as well. Modify the address above to match with what you actually have.
 

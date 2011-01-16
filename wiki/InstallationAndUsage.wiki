@@ -41,7 +41,7 @@ Check out any error. You shouldn't be getting one. Once that's you are ready to 
 
 Once you are through with the deployment and everything, you can test if the system is properly install and ready to run by opening the browser and type in the following address.
 
- http://<your-sitebridge-server-url>/bridgeconsole/status
+ http://{{{<your-sitebridge-server-url>}}}/bridgeconsole/status
 
  e.g. 
 
@@ -88,7 +88,7 @@ And if you download the pre-built jar, you execute it with this command
 java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>"
 }}}
 
-Wait a little bit, and you should be seeing output like th is.
+Wait a little bit, and you should be seeing output like this. This means you are done setting up everything.
 
 {{{
 0    [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Controller  - Kick off server #0
@@ -97,3 +97,5 @@ Wait a little bit, and you should be seeing output like th is.
 20528 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Controller  - Keep server warm
 ...
 }}}
+
+If you are behind a firewall, you can specify proxy server via the {{{http.proxyHost}}} and {{{http.proxyPort}}} system properties. Just pass them via -D parameter.

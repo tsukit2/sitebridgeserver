@@ -29,7 +29,7 @@ A transformer is a groovy script that you can specify when running the client. T
 
 For convenience, a basic/default is provided which you can use as it or enhance it. Also, since SiteBridgeClient support a chain of multiple transformers, you write your own and add it to the chain.
 
-= Sounds Good To Be True? =
+= Too Good To Be True? =
 
 SiteBridge is not for everyone - period. All GEA apps must follow the same rule that all requests must be fullfilled. That means web sites with heavy graphics will likely have problems. This is because there are many hops happening between server and client (Note that this is a deliberate design choice so that client can be used even in the most restricted environment, not a consequence of an overlook).
 

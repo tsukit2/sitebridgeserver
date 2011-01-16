@@ -62,6 +62,6 @@ If so, you are done with server side.
 
 == Requirements ==
 
-If you just want to use !SiteBridgeClient, all you need is a Java Runtime Environment 6 (though older versions like 5 is fine, it's strongly recommend to go with the latest version you can afford). All you need to do is to download the pre-build [http://code.google.com/p/sitebridgeclient/downloads/list !SiteBridgeClient jar] file. If you however want to build the client code, you will need Java JDK 6+ and Maven 2. Jump directly to Start Bridging section if you already downloaded the client jar. Otherwise, continue to Build SiteBridgeClient section.
+If you just want to use !SiteBridgeClient, all you need is a Java Runtime Environment 6 (though older versions like 5 is fine, it's strongly recommend to go with the latest version you can afford). All you need to do is to download the pre-build [http://code.google.com/p/sitebridgeclient/downloads/list SiteBridgeClient jar] file. If you however want to build the client code, you will need Java JDK 6+ and Maven 2. Jump directly to Start Bridging section if you already downloaded the client jar. Otherwise, continue to Build !SiteBridgeClient section.
 
 == Build ==

@@ -11,3 +11,50 @@ As mentioned in the concepts page, GAE scales your application dynamically. This
 {{{
 java -jar sitebridgeclient-1.0-jar-with-dependencies.jar warmup "http://<your-sitebridge-server-url>"
 }}}
+
+You should be seeing an output like this.
+
+{{{
+0    [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Controller  - Kick off server #0
+3486 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Controller  - Kick off server #1
+4553 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Controller  - Keep server warm
+20528 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Controller  - Keep server warm
+...
+}}}
+
+
+You should leave this running all the time while you are bridging a site. Also, it's strongly recommended to stop it as soon as you are no longer bridging anything. Otherwise you will be spending your free daily quota unnecessarily.
+
+= Bridge A Site =
+
+Once your GAE app is warmed up, you are ready to bridge a site. To do that, it's as simple as running the following command:
+
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>" "http://<target-site-url>" BasicTransformer.groovy
+}}}
+
+What you are doing here is that you want to bridge your SiteBridgeServer to the target site using the given basic request/response transformer. If things run as expected, you'll see the following output.
+
+{{{
+0    [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Reset server succeeded
+392  [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Query server found no pending request
+1188 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Query server found no pending request
+...
+}}}
+
+Once you are seeing that, your bridge site is ready. You can now test it by opening up a browser and connect to {{{http://<your-sitebridge-server-url>}}}. Note that if your actual site has additional paths like /aaa/bbb, you can just pass it like that to your bridge site as if it knows about it (e.g. {{{http://<your-sitebridge-server-url>/aaa/bbb}}}.
+
+That's it. If you don't have the site that you want to bridge up yet, you might want to try bridging to a public site first (make sure to use the site that's not graphic heavy). For example, you can bridge the mobile CNN site with this command.
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>" "http://m.cnn.com" BasicTransformer.groovy
+}}}
+
+Another interesting one is mobile Wikipedia site.
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>" "http://en.m.wikipedia.org" BasicTransformer.groovy
+}}}
+
+If you bridge either sites above, it's strongly recommended to visit {{{http://<your-sitebridge-server-url>}}} with a mobile device.

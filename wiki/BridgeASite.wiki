@@ -5,4 +5,9 @@
 You are reading this page because you are ready to bridge a site. You are assumed that you have some idea about how it works, and have set up both !SiteBridgeServer and !SiteBridgeClient successfully. If not, read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge the concepts] and [http://code.google.com/p/sitebridgeserver/wiki/BuildAndInstallation setup instructions] first
 
 = Let's Warm It Up =
-The instructions that follow assume you have deployed !SiteBridgeServer at {{{http://yourgaeappsite.appspot.com}}}
+
+As mentioned in the concepts page, GAE scales your application dynamically. This is good for normal sites but very bad for SiteBridge because of the increase latency when new server process is spawn up. We want to warm up the site (kick off some number of servers and keep them alive) before actually using it. To do this, just execute the following command:
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar warmup "http://<your-sitebridge-server-url>"
+}}}

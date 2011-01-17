@@ -58,3 +58,13 @@ java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridg
 }}}
 
 If you bridge either sites above, it's strongly recommended to visit {{{http://<your-sitebridge-server-url>}}} with a mobile device.
+
+= Bridge An HTTPS Site =
+
+You can bridge an HTTPS site in the same manner as you would with the normal site. Just change the protocol in the URL you pass to !SiteBridgeClient program. The BasicTranformer.groovy will automatically handle the cookie's domain and secure flag such that, if your GAE site is not using HTTPS, it will strip off the secure flag and the domain. This way the secure cookie will still be sent back by the browser. *It's however strongly recommended that you put your GAE bridge site on HTTPS as well if you are bridging a secure target site. This will help keep the information passed between !SiteBridgeClient and !SiteBridgeServer! secure. Any sensitive information will not be sniffable by bad people.*
+
+You can also bridge an HTTPS site whose certificate is self-signed. These sites are usually your internal sites or your development sites. To do that, you need to tell !SiteBridgeClient not verify hostname and whatnots otherwise things will blow up. !SiteBridgeClient already comes with another transformer called NoCertCheckTransformer.groovy which help suppressing the check. To use it, just add it into the command. Remember that !SiteBridgeClient support a *chain* of transformers. So you can theoretically have as many transformers as you like. This is an example.
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>" "http*s*://<your-self-signed-sites" BasicTransformer.groovy NoCertCheckTransformer.groovy
+}}}

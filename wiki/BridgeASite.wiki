@@ -61,10 +61,34 @@ If you bridge either sites above, it's strongly recommended to visit {{{http://<
 
 = Bridge An HTTPS Site =
 
-You can bridge an HTTPS site in the same manner as you would with the normal site. Just change the protocol in the URL you pass to !SiteBridgeClient program. The BasicTranformer.groovy will automatically handle the cookie's domain and secure flag such that, if your GAE site is not using HTTPS, it will strip off the secure flag and the domain. This way the secure cookie will still be sent back by the browser. *It's however strongly recommended that you put your GAE bridge site on HTTPS as well if you are bridging a secure target site. This will help keep the information passed between !SiteBridgeClient and !SiteBridgeServer! secure. Any sensitive information will not be sniffable by bad people.*
+You can bridge an HTTPS site in the same manner as you would with the normal site. Just change the protocol in the URL you pass to !SiteBridgeClient program. The BasicTranformer.groovy will automatically handle the cookie's domain and secure flag such that, if your GAE site is not using HTTPS, it will strip off the secure flag and the domain. This way the secure cookie will still be sent back by the browser. *It's however strongly recommended that you put your GAE bridge site on HTTPS as well if you are bridging a secure target site. This will help keep the information passed between !SiteBridgeClient and !SiteBridgeServer secure. Any sensitive information will not be sniffable by bad people.*
 
 You can also bridge an HTTPS site whose certificate is self-signed. These sites are usually your internal sites or your development sites. To do that, you need to tell !SiteBridgeClient not verify hostname and whatnots otherwise things will blow up. !SiteBridgeClient already comes with another transformer called NoCertCheckTransformer.groovy which help suppressing the check. To use it, just add it into the command. Remember that !SiteBridgeClient support a *chain* of transformers. So you can theoretically have as many transformers as you like. This is an example.
 
 {{{
 java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>" "http*s*://<your-self-signed-sites" BasicTransformer.groovy NoCertCheckTransformer.groovy
 }}}
+
+= Write A Transformer =
+
+Usually the two transformers given with the !SiteBridgeClient are sufficient to bridge basic to medium-fancy sites. However, they may or may not necessarily work well with all sites. When things don't work, most likely the transformers you use must be modified or a new one must be added. The recommended approach is, if BasicTransformer.groovy already works correctly on your side but it misses something, you should create a new transformer file and do just what's missing. Then you can pass this new transformer into the chain. If however, BasicTransformer.groovy is doing things wrong genernally, just fix it and submit the changes back to the project.
+
+The anatomy of a transformer is very simple. Basically it's a Groovy script with two required closure defined at top level: onRequest and onResponse. These two closures are called before the request is sent to the target site and before the response is sent back to the server. onRequest closure has access to a Map-like object called "request", while onResponse closure has access to another Map-like object called "response". These are their properties.
+
+*request*
+||Property||Description||Type||
+||method||HTTP method||String||
+||query||The query string portion that appears in the URL.||Map-like object whose value could either be a string or List-like object containing strings.||
+||params||The parameters passed in POST body. Note that parameters passed in the URL do not appear here.||Map-like object whose value could either be a string or List-like object containing strings.||
+||headers||HTTP headers||Map-like object whose value could either be a string or List-like object containing strings.||
+||bodyBytes||Bytes array of request body||byte[]||
+
+*response*
+||Property||Description||Type||
+||status||Nuermic status of the response||int||
+||headers||HTTP headers||Map-like object whose value could either be a string or List-like object containing strings.||
+||bodyBytes||Bytes array of request body||byte[]||
+
+You are free to modify any of these properties in your transformer. Of course, power comes with responsibility. So make very sure that you know what you are doing.
+
+Also, a good way to start learning how to write your own transformer is to understanding how BasicTransformer.groovy works.

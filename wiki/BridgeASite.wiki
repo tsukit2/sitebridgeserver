@@ -2,7 +2,17 @@
 
 = Introduction =
 
-You are reading this page because you are ready to bridge a site. You are assumed that you have some idea about how it works, and have set up both !SiteBridgeServer and !SiteBridgeClient successfully. If not, read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge the concepts] and [http://code.google.com/p/sitebridgeserver/wiki/BuildAndInstallation setup instructions] first
+You are reading this page because you are ready to bridge a site. You are assumed that you have some idea about how it works, and have set up both !SiteBridgeServer and !SiteBridgeClient successfully. If not, read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge the concepts] and [http://code.google.com/p/sitebridgeserver/wiki/BuildAndInstallation setup instructions] first.
+
+If you don't like reading documents, you can also write the !SiteBridgeClient without providing any parameters. The program will show the usage as shown below.
+
+{{{
+Main Usage:
+   <serverURL> <endpointURL> [<transformation script>*]
+Alternative:
+   warmup <serverURL>
+   report [<# requests to go back - default all requests>]
+}}}
 
 = Let's Warm It Up =
 
@@ -92,3 +102,25 @@ The anatomy of a transformer is very simple. Basically it's a Groovy script with
 You are free to modify any of these properties in your transformer. Of course, power comes with responsibility. So make very sure that you know what you are doing.
 
 Also, a good way to start learning how to write your own transformer is to understanding how BasicTransformer.groovy works.
+
+= Generate A Report =
+
+Once you got everything working and you start interacting with the bridge site, behind the scene, !SiteBridgeClient tracks everything that happens and save off the information into a directory called {{{data}}} under your current location. The files are just JSON text files, each represents request/response pair. If you savvy enough, you can just open up these files directly to look for the information you need. However, if you would like a friendly HTML report, you can do that by generating it with the following comand.
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar report
+}}}
+
+The command will generate an HTML report under {{{data/html}}}. Just open up the index.html there.
+
+Sometimes you have a long series of interaction with the bridge site and you just want to generate the report for only the last N request/response pairs, you can pass a number to it as shown below. For example, the following command generate the report only for the last 10 interactions.
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar report 10
+}}}
+
+= It simply doesn't work =
+
+You've tried everything you could and you believe you did everything already but you still cannot bridge the target site. There are two possibilities. One is that there is a bug in either !SiteBridgeClient or !SiteBridgeServer, or there is a bug in the transformers you are using. Usually the latter is more likely (not intend to imply that the SiteBridge components are rock solid!). Therefore, the best way to start troubleshooting problems is to look into the transformers. A simple way to do that is to put print statement to print out information like headers and whatnots.
+
+Also, the generated HTML report is very helpful. Many times you will see something wrong there (e.g. wrong header values, wrong cookie attributes).

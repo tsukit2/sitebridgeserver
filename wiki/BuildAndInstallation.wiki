@@ -79,13 +79,13 @@ Assuming everything goes fine, you'll find the ready-to-run jar file in {{{targe
 Either you've built the client or download the ready-to-run jar file, you are ready to smoke test with !SiteBridgeServer that you just deployed. Just make you sure are using command line. If you build the client yourself, the way to execute it is to be in the project folder and execute this command
 
 {{{
-java -jar target/sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>"
+java -jar target/sitebridgeclient-1.0-jar-with-dependencies.jar warmup http://<your-sitebridge-server-url>"
 }}}
 
 And if you download the pre-built jar, you execute it with this command
 
 {{{
-java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>"
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar warmup "http://<your-sitebridge-server-url>"
 }}}
 
 Wait a little bit, and you should be seeing output like this. And if you indeed see it, this means you are done setting up everything. *Make sure to press Ctrl-C to stop the program. Do not leave it running otherwise you will be spending your free daily quota unnecessarily.*

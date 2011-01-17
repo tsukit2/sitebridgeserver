@@ -121,7 +121,7 @@ Sometimes you have a long series of interaction with the bridge site and you jus
 java -jar sitebridgeclient-1.0-jar-with-dependencies.jar report 10
 }}}
 
-= It simply doesn't work =
+= It Simply Doesn't Work =
 
 You've tried everything you could and you believe you did everything already but you still cannot bridge the target site. There are two possibilities. One is that there is a bug in either !SiteBridgeClient or !SiteBridgeServer, or there is a bug in the transformers you are using. Usually the latter is more likely (not intend to imply that the SiteBridge components are rock solid!). Therefore, the best way to start troubleshooting problems is to look into the transformers. A simple way to do that is to put print statement to print out information like headers and whatnots.
 

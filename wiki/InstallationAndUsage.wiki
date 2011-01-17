@@ -1,4 +1,4 @@
-#summary Installation instructions for both SiteBridgeServer and SiteBridgeClient
+#summary Build and installation instructions for both SiteBridgeServer and SiteBridgeClient
 
 <wiki:toc max_depth="2" />
 

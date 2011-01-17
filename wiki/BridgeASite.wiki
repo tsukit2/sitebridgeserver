@@ -2,4 +2,7 @@
 
 = Introduction =
 
-You are reading this page because you are ready to bridge a site. You are assumed that you have some idea about how it works, and have set up both !SiteBridgeServer and !SiteBridgeClient successfully. If not, read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge the concepts] and [http://code.google.com/p/sitebridgeserver/wiki/BuildAndInstallation setup instructions first]
+You are reading this page because you are ready to bridge a site. You are assumed that you have some idea about how it works, and have set up both !SiteBridgeServer and !SiteBridgeClient successfully. If not, read [http://code.google.com/p/sitebridgeserver/wiki/AllAboutSiteBridge the concepts] and [http://code.google.com/p/sitebridgeserver/wiki/BuildAndInstallation setup instructions] first
+
+= Let's Warm It Up =
+The instructions that follow assume you have deployed !SiteBridgeServer at {{{http://yourgaeappsite.appspot.com}}}

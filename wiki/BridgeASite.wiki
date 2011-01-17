@@ -126,3 +126,15 @@ java -jar sitebridgeclient-1.0-jar-with-dependencies.jar report 10
 You've tried everything you could and you believe you did everything already but you still cannot bridge the target site. There are two possibilities. One is that there is a bug in either !SiteBridgeClient or !SiteBridgeServer, or there is a bug in the transformers you are using. Usually the latter is more likely (not intend to imply that the SiteBridge components are rock solid!). Therefore, the best way to start troubleshooting problems is to look into the transformers. A simple way to do that is to put print statement to print out information like headers and whatnots.
 
 Also, the generated HTML report is very helpful. Many times you will see something wrong there (e.g. wrong header values, wrong cookie attributes).
+
+= Things To Keep In Mind =
+
+Although SiteBridge enables the bridge site to look and behave identical to the target site, it can only do that to the limit/restrictions of the technology upon which it's built allows. That means there are still some differences between the bridge site and your target site and sometimes these differences matter to you. For example, even though your target always send content encoded in gzip format, the bridge site may or may not send the same content in gzip format. GAE disallows the following HTTP headers and it takes control of if/when they can be set.
+
+ * Content-Encoding
+ * Content-Length
+ * Date
+ * Server
+ * Transfer-Encoding
+
+These are just some examples of the differences you could see. So don't be surprised when you run into one.

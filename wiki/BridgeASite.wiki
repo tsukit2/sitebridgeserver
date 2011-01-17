@@ -76,18 +76,18 @@ Usually the two transformers given with the !SiteBridgeClient are sufficient to 
 The anatomy of a transformer is very simple. Basically it's a Groovy script with two required closure defined at top level: onRequest and onResponse. These two closures are called before the request is sent to the target site and before the response is sent back to the server. onRequest closure has access to a Map-like object called "request", while onResponse closure has access to another Map-like object called "response". These are their properties.
 
 *request*
-||*Property*||*Description*||*Type*||
-||method||HTTP method||String||
-||query||The query string portion that appears in the URL.||Map-like object whose value could either be a string or List-like object containing strings.||
-||params||The parameters passed in POST body. Note that parameters passed in the URL do not appear here.||Map-like object whose value could either be a string or List-like object containing strings.||
-||headers||HTTP headers||Map-like object whose value could either be a string or List-like object containing strings.||
-||bodyBytes||Bytes array of request body||byte[]||
+|| *Property* || *Description* || *Type* ||
+|| method || HTTP method || String ||
+|| query || The query string portion that appears in the URL. || Map-like object whose value could either be a string or List-like object containing strings. ||
+|| params || The parameters passed in POST body. Note that parameters passed in the URL do not appear here. || Map-like object whose value could either be a string or List-like object containing strings. ||
+|| headers || HTTP headers || Map-like object whose value could either be a string or List-like object containing strings. ||
+|| bodyBytes || Bytes array of request body || byte[] ||
 
 *response*
-||*Property*||*Description*||*Type*||
-||status||Nuermic status of the response||int||
-||headers||HTTP headers||Map-like object whose value could either be a string or List-like object containing strings.||
-||bodyBytes||Bytes array of request body||byte[]||
+|| *Property* || *Description* || *Type* ||
+|| status || Numeric status of the response || int ||
+|| headers || HTTP headers || Map-like object whose value could either be a string or List-like object containing strings. ||
+|| bodyBytes || Bytes array of response body || byte[] ||
 
 You are free to modify any of these properties in your transformer. Of course, power comes with responsibility. So make very sure that you know what you are doing.
 

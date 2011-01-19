@@ -4,7 +4,7 @@
 
 = What The Heck Is It? =
 
-Welcome to !SiteBridge! !SiteBridge allows you to bridge a Google App Engine (GAE) site to a target site. With problem transformers written (default/basic/generic provided) the GAE bridge site looks and behaves identically to the target site. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
+Welcome to !SiteBridge! !SiteBridge allows you to bridge a Google App Engine (GAE) site to a target site. With proper transformers written (default/basic/generic version is provided) the GAE bridge site looks and behaves identically to the target site. The target site is usually inaccessible directly from the rest of the world (e.g. behind firewall). This allows one to temporarily expose it so testing and/or showcasing it are possible. 
 
 = Why Bother? =
 

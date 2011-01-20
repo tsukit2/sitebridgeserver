@@ -35,9 +35,9 @@ For convenience, a basic/default is provided which you can use as it or enhance 
 
 = Should/Can I Use It? =
 
-!SiteBridge is not for everyone - period. All GAE apps must follow a rule that all requests must be fulfilled. That means web sites with heavy graphics will likely have problems because graphics take time to hop around and we got many hops happening between server and client. Note that this is a deliberate design choice (not an overlook) so that client can be used even in the most restricted environment.
+!SiteBridge is not for everyone - period. All GAE apps must follow a rule that all requests must be fulfilled within a strict 30 seconds or less timeframe. That means web sites with heavy graphics will likely have problems because graphics take time to hop around and we got many hops happenning between server and client. Note that this is a deliberate design choice (not an overlook) so that client can be used even in the most restricted environment.
 
-Given above, this explains why !SiteBridge excels with mobile sites (usually these sites are very light) and regular sites with moderate graphic contents.  
+Given above, this explains why !SiteBridge excels with mobile sites (usually these sites are very light) and regular sites with moderate graphic contents. The best way to find out if you can use it is to try it.
 
 = Isn't It Warm Enough? =
 

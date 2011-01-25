@@ -6,15 +6,12 @@ def manager = new BridgeManager(memcache)
 def myresponse = manager.processRequest(request)
 
 // now relay the information to the original request
-// note that we don't set the headers that Google doesn't allow
 response.status = myresponse.responseDetails.status
 myresponse.responseDetails.headers?.each  { k,v ->
-   if (k != 'Content-Encoding' && k != 'Transfer-Encoding') {
-      if (v instanceof List) {
-         v.each { response.addHeader(k,it) }
-      } else {
-         response.addHeader(k,v)
-      }
+   if (v instanceof List) {
+      v.each { response.addHeader(k,it) }
+   } else {
+      response.addHeader(k,v)
    }
 }
 

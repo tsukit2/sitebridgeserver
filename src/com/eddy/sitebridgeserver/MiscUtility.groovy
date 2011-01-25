@@ -70,5 +70,18 @@ class MiscUtility {
       list.eachWithIndex { v,i -> bytearray[i] = v }
       return bytearray
    }
+
+   /**
+    * Utility method to help finding header in the given map in the case-insensitive way.
+    *
+    * @param headers             Header map.
+    * @param key                 String key to find.
+    *
+    * @return name of the actual key or null if not found
+    */
+   static getHeaderKeyLike(Map headers, String key) {
+      def lowerCaseKey = key.toLowerCase()
+      headers.find { it.key.toLowerCase() == lowerCaseKey }?.key
+   }
 }
 

@@ -46,6 +46,9 @@ public class BridgeManager {
       log.info("request queue...waiting")
       def response = waitForResponse(index, request.pathInfo)
 
+      // normalize response to make it work with GAE
+      normalizeResponse(response)
+
       // once you reach here, the request has been satisfied
       return response
    }
@@ -278,5 +281,12 @@ public class BridgeManager {
        MiscUtility.inflateByteArrayToObj(deflate)
    }
 
+   private normalizeResponse(response) {
+      response.responseDetails.headers = response.responseDetails.headers?.findAll {
+         it.key.compareToIgnoreCase('Content-Encoding') != 0 &&
+         it.key.compareToIgnoreCase('Transfer-Encoding') != 0
+      }
+      //log.info "******* ${response.responseDetails.headers}"
+   }
 }
 

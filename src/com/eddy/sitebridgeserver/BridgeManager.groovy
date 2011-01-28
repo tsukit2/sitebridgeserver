@@ -92,7 +92,8 @@ public class BridgeManager {
    private Map constructQueryMap(String queryStr) {
       if (queryStr) {
          return queryStr.split('&').inject([:]) { m,v -> 
-            def s = v.split('=')
+            def divpos = v.indexOf('=')
+            def s = divpos != -1 ? [v.substring(0,divpos), v.substring(divpos+1)] : [v]
             if (s[0] != 'pathInfo') {
                def newval = s.size() == 2 ? URLDecoder.decode(s[1], 'utf8') : ''
                if (m.containsKey(s[0])) {

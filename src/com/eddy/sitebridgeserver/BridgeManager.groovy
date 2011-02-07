@@ -33,6 +33,10 @@ public class BridgeManager {
     * @return Map representing the response.
     */
    Map processRequest(HttpServletRequest servletRequest) {
+      // check authorization. This will throw exception if server is in restricted
+      // mode and there is no bridge passcode is passed
+      def bridgePasscode = checkAuthorization(servletRequest)
+
       // convert to request object that the system knows about first
       def request = constructRequestMapObject(servletRequest)
 
@@ -47,10 +51,32 @@ public class BridgeManager {
       def response = waitForResponse(index, request.pathInfo)
 
       // normalize response to make it work with GAE
-      normalizeResponse(response)
+      normalizeResponse(response, bridgePasscode)
 
       // once you reach here, the request has been satisfied
       return response
+   }
+
+   private checkAuthorization(HttpServletRequest servletRequest) {
+      // verify authorization only if we found bridge passcode, which is only when
+      // the client initialize server with restriction mode
+      def bridgePasscode = memcache['bridgePasscode']
+      if (!bridgePasscode) {
+         return
+      }
+
+      // if reach here need to check for cookie. If we found match, we are goo
+      if (servletRequest.cookies.any { c -> c.name == 'bridgePasscode' && c.value == bridgePasscode }) {
+         return
+      }
+
+      // if reach here, we don't see cookie. let's see if passcode is passed in as parameter
+      if (servletRequest.getParameter('bridgePasscode')?.equals(bridgePasscode)) {
+         return bridgePasscode
+      }
+
+      // if reach here, we don't allow access
+      throw new IllegalAccessException("Unauthorized access")
    }
 
    /**
@@ -69,16 +95,43 @@ public class BridgeManager {
          method:request.method,
          pathInfo:request.getParameter('pathInfo'),
          query:queryMap,
-         // here we turns the list of header to map of value, which could either be an atomic
-         // or a list of values.
-         headers:request.headerNames.inject([:]) { m,n ->
-            def values = request.getHeaders(n).inject([]) { l,v -> l << v; v }
-            m[n] = values.size() == 1 ? values[0] : values
-            return m
-         },
+         headers:constructRequestHeaderMap(request),
          params:paramsMap,
          bodyBytes:request.inputStream.bytes
       ]
+   }
+
+   /**
+    * Utility method to construct request headeer. This not only normalize the header to map of
+    * either an atomic value or a list of it. It also do extract logic needed.
+    *
+    * @param request                   Raw servlet request.
+    *
+    * @return Map representing the request header map.
+    */
+   private constructRequestHeaderMap(HttpServletRequest request) {
+      def headers = request.headerNames.inject([:]) { m,n ->
+         def values = request.getHeaders(n).inject([]) { l,v -> l << v; v }
+         m[n] = values.size() == 1 ? values[0] : values
+         return m
+      }
+      
+      // remove bridge passcode cookie. We don't want it
+      def key = MiscUtility.getHeaderKeyLike(headers, 'Cookie')
+      if (key) {
+         def val = headers[key]
+         if (val instanceof List) {
+            headers[key] = val.findAll { !it.startsWith('bridgePasscode') }
+         } else {
+            val = val.split(';')
+            if (val.size() == 1) {
+               headers.remove(key)
+            } else {
+               headers[key] = val.findAll { !it.startsWith('bridgePasscode') }.join(';')
+            }
+         }
+      }
+      return headers
    }
 
    /**
@@ -94,7 +147,7 @@ public class BridgeManager {
          return queryStr.split('&').inject([:]) { m,v -> 
             def divpos = v.indexOf('=')
             def s = divpos != -1 ? [v.substring(0,divpos), v.substring(divpos+1)] : [v]
-            if (s[0] != 'pathInfo') {
+            if (s[0] != 'pathInfo' && s[0] != 'bridgePasscode') {
                def newval = s.size() == 2 ? URLDecoder.decode(s[1], 'utf8') : ''
                if (m.containsKey(s[0])) {
                   def val = m[s[0]]
@@ -125,6 +178,7 @@ public class BridgeManager {
       def paramsMap = new HashMap(params)
       queryMap?.keySet().each { paramsMap.remove(it) }
       paramsMap.remove('pathInfo')
+      paramsMap.remove('bridgePasscode')
       return paramsMap ?: null
    }
 
@@ -267,11 +321,24 @@ public class BridgeManager {
       }
    }
 
-   void reset() {
+   Map reset(HttpServletRequest servletRequest) {
       // clear all memcache
       memcache.clearAll()
       memcache['lastRequestIndex'] = 0
       memcache['lastServeIndex'] = 0
+
+      // see if we need to initialize in restriction mode
+      def bridgePasscode = null
+      if (servletRequest.getParameter('restricted')?.equals('true')) {
+         memcache['bridgePasscode'] = bridgePasscode = System.nanoTime().toString()
+      }
+
+      // finally return result
+      def response = [status:true]
+      if (bridgePasscode) {
+         response.bridgePasscode = bridgePasscode
+      }
+      return response
    }
 
    void warmup() {
@@ -282,12 +349,31 @@ public class BridgeManager {
        MiscUtility.inflateByteArrayToObj(deflate)
    }
 
-   private normalizeResponse(response) {
+   private normalizeResponse(response, bridgePasscode) {
+      // remove GAE-unsupported headers
       response.responseDetails.headers = response.responseDetails.headers?.findAll {
          it.key.compareToIgnoreCase('Content-Encoding') != 0 &&
          it.key.compareToIgnoreCase('Transfer-Encoding') != 0
       }
+
+      // add bridge header if need to
+      if (bridgePasscode) {
+         def key = MiscUtility.getHeaderKeyLike(response.responseDetails.headers, 'Set-Cookie')
+         def cookieValue = "bridgePasscode=${bridgePasscode}; path=/".toString()
+         if (key) {
+            def value = response.responseDetails.headers[key]
+            if (value instanceof List) {
+               value << cookieValue
+            } else {
+               response.responseDetails.headers[key] = cookieValue
+            }
+         } else {
+            response.responseDetails.headers['Set-Cookie'] = cookieValue
+         }
+      }
+
       //log.info "******* ${response.responseDetails.headers}"
    }
+
 }
 

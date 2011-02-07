@@ -9,9 +9,9 @@ index = {
 
 reset = {
    // reset it
-   new BridgeManager(memcache).reset()
+   def resetResponse = new BridgeManager(memcache).reset(request)
    headers.contentType = 'text/json'
-   println JSONObject.fromObject([status:true]).toString()
+   println JSONObject.fromObject(resetResponse).toString()
 }
 
 status = {

@@ -91,9 +91,11 @@ To start a restricted bridge, issue the following command.
 java -jar sitebridgeclient-1.0-jar-with-dependencies.jar --restricted "http://<your-sitebridge-server-url>" "http://<target-site-url>" BasicTransformer.groovy
 }}}
 
+Notice the first line of the output.
+
 {{{
 Bridging...
-0    [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Reset server succeeded *bridgePasscode = 2599728067476682*
+0    [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Reset server succeeded bridgePasscode = 2599728067476682
 621  [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Query server found no pending request
 1504 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Query server found no pending request
 ...

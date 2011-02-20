@@ -10,7 +10,7 @@ If you don't like reading documents, you can also write the !SiteBridgeClient wi
 
 {{{
 Main Usage:
-   <serverURL> <endpointURL> [<transformation script>*]
+   [--restricted] <serverURL> <endpointURL> [<transformation script>*]
 Alternative:
    warmup <serverURL>
    report [<# requests to go back - default all requests>]
@@ -73,13 +73,37 @@ If you bridge either sites above, it's strongly recommended to visit {{{http://<
 
 = Bridge An HTTPS Site =
 
-You can bridge an HTTPS site in the same manner as you would with the normal site. Just change the protocol in the URL you pass to !SiteBridgeClient program. The BasicTranformer.groovy will automatically handle the cookie's domain and secure flag such that, if your GAE site is not using HTTPS, it will strip off the secure flag and the domain. This way the secure cookie will still be sent back by the browser. *It's however strongly recommended that you put your GAE bridge site on HTTPS as well if you are bridging a secure target site. This will help keep the information passed between !SiteBridgeClient and !SiteBridgeServer secure. Any sensitive information will not be sniffable by bad people.*
+You can bridge an HTTPS site in the same manner as you would with the normal site. Just change the protocol in the URL you pass to !SiteBridgeClient program. The BasicTranformer.groovy will automatically handle the cookie's domain and secure flag such that, if your GAE site is not using HTTPS, it will strip off the secure flag and the domain. This way the secure cookie will still be sent back by the browser. *It's however strongly recommended that you put your GAE bridge site on HTTPS as well if you are bridging a secure target site. This will help keep the information passed between !SiteBridgeClient and !SiteBridgeServer secure. Any sensitive information will not be sniffable by bad people.* In fact, since GAE already provide HTTPS for free already, there is no point for not using if your target site is using HTTPS.
 
 You can also bridge an HTTPS site whose certificate is self-signed. These sites are usually your internal sites or your development sites. To do that, you need to tell !SiteBridgeClient not verify hostname and whatnots otherwise things will blow up. !SiteBridgeClient already comes with another transformer called NoCertCheckTransformer.groovy which help suppressing the check. To use it, just add it into the command. Remember that !SiteBridgeClient support a *chain* of transformers. So you can theoretically have as many transformers as you like. This is an example.
 
 {{{
 java -jar sitebridgeclient-1.0-jar-with-dependencies.jar "http://<your-sitebridge-server-url>" "http*s*://<your-self-signed-sites" BasicTransformer.groovy NoCertCheckTransformer.groovy
 }}}
+
+= Restricted Bridge =
+
+Sometimes you want to expose your target site only to certain people. This might be because the content is sensitive and/or you don't want any free standers to get involved while the bridge is active. SiteBridge supports this by providing --restricted flag to turn on restriction. When on, no one can get into your site without knowing the bridge passcode. Only you and your interested parties know the bridge passcode so they can access. 
+
+To start a restricted bridge, issue the following command.
+
+{{{
+java -jar sitebridgeclient-1.0-jar-with-dependencies.jar --restricted "http://<your-sitebridge-server-url>" "http://<target-site-url>" BasicTransformer.groovy
+}}}
+
+{{{
+Bridging...
+0    [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Reset server succeeded *bridgePasscode = 2599728067476682*
+621  [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Query server found no pending request
+1504 [pool-1-thread-1] INFO  com.eddy.sitebridgeclient.Bridge  - Query server found no pending request
+...
+}}}
+
+The first line of the log is the bridge passcode that needs to be passed in the first request from whoever want to access the bridge. This passcode is generated from the server and it changes *every time* a bridge is established. This means that if you restart a bridge, you'll need to use a new passcode.
+
+Passing the bridge passcode is pretty easy. If your first request is a GET, just putting *bridgePasscode* parameter right in the URL. If it's a POST, you can also embedded the parameter right in the POST body as well. If that's inconvenient or impossible, you can just make GET request to something (even non-existing) with the parameter first, then proceed with your usual POST request.
+
+The underlying mechanism for restriction is cookie. Once the right passcode is passed, the server will generate a permit cookie. As long as that permit cookie is passed back and forth in every request to the bridge, the access is granted. Note that this SiteBridge cookie is *never* seen by the target site. Same thing with the bridgePasscode parameter as well. When the actual request hits the target site, it's as if this parameter is never passed at all.
 
 = Write A Transformer =
 
